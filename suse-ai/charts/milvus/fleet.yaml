@@ -1,0 +1,50 @@
+defaultNamespace: suse-ai
+helm:
+  repo: oci://dp.apps.rancher.io/charts
+  chart: milvus
+  version: 4.2.2
+  releaseName: milvus
+  values:
+    global:
+      imagePullSecrets:
+      - application-collection
+    cluster:
+      enabled: True
+    standalone:
+      persistence:
+        persistentVolumeClaim:
+          storageClass: local-path
+    etcd:
+      replicaCount: 1
+      persistence:
+        storageClassName: local-path
+    minio:
+      mode: distributed
+      replicas: 4
+      rootUser: "admin"
+      rootPassword: "adminminio"
+      persistence:
+        storageClass: local-path
+      resources:
+        requests:
+          memory: 1024Mi
+    kafka:
+      enabled: true
+      name: kafka
+      replicaCount: 3
+      broker:
+        enabled: true
+      cluster:
+        listeners:
+          client:
+            protocol: 'PLAINTEXT'
+          controller:
+            protocol: 'PLAINTEXT'
+      persistence:
+        enabled: true
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+        storageClassName: "local-path" 

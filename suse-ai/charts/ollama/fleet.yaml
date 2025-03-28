@@ -1,0 +1,21 @@
+defaultNamespace: suse-ai
+helm:
+  repo: oci://dp.apps.rancher.io/charts
+  chart: ollama
+  version: 0.63.0
+  releaseName: ollama
+  values:
+    global:
+      imagePullSecrets:
+      - application-collection
+    ingress:
+      enabled: false
+    defaultModel: "gemma:2b"
+    ollama:
+      gpu:
+        enabled: true
+        type: 'nvidia'
+        number: 1
+    persistentVolume:
+      enabled: true
+      storageClass: local-path 

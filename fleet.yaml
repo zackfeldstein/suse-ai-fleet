@@ -1,0 +1,8 @@
+namespace: fleet-default
+targetCustomizations:
+- name: suse-ai-deployment
+  clusterSelector:
+    matchLabels:
+      environment: production
+  # Optional: specify a particular cluster name if needed
+  # clusterName: your-cluster-name 
