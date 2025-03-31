@@ -2,10 +2,10 @@
 
 This repository contains Kubernetes manifests for deploying the SUSE AI stack using Rancher Fleet. The deployment includes:
 
+- NVIDIA GPU Operator
 - Ollama
 - Milvus
 - Open WebUI
-- NVIDIA GPU Operator
 
 ## Repository Structure
 
@@ -15,9 +15,11 @@ fleet-resources/
 ├── gpu-operator/             # NVIDIA GPU Operator
 │   ├── namespace.yaml        # Namespace definition
 │   └── fleet.yaml            # GPU Operator helm chart
-├── suse-ai/
-│   ├── namespace.yaml        # Namespace definition
-│   ├── registry-secret.yaml  # Registry authentication template
+├── suse-ai-setup/            # Namespace and secret setup
+│   ├── fleet.yaml            # Setup bundle configuration
+│   ├── namespace.yaml        # suse-ai namespace definition
+│   └── registry-secret.yaml  # Registry secret template
+├── suse-ai/                  # Resources for suse-ai namespace
 │   └── charts/
 │       ├── ollama/           # Ollama chart configuration
 │       │   └── fleet.yaml
@@ -38,24 +40,18 @@ fleet-resources/
 
 ### 1. Create Registry Secret
 
-Before deploying via Fleet, you need to set up the registry authentication token:
+Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `suse-ai-setup/registry-secret.yaml` file:
 
-1. Obtain your registry token for dp.apps.rancher.io
-2. In the Rancher UI, go to your cluster → Resources → Secrets
-3. Create a new secret in the `suse-ai` namespace (create the namespace first if needed):
-   - Name: `application-collection`
-   - Type: `docker-registry`
-   - Registry: `dp.apps.rancher.io`
-   - Username: (leave empty if using token authentication)
-   - Password: Your registry token
-
-Alternatively, you can apply the registry-secret.yaml after setting the `REGISTRY_TOKEN` placeholder:
-
-```bash
-# Replace the placeholder with your base64-encoded token
-REGISTRY_TOKEN="your-token-here"
-sed -i "s/\${REGISTRY_TOKEN}/$REGISTRY_TOKEN/" fleet-resources/suse-ai/registry-secret.yaml
-kubectl apply -f fleet-resources/suse-ai/registry-secret.yaml
+```yaml
+stringData:
+  .dockerconfigjson: |-
+    {
+      "auths": {
+        "dp.apps.rancher.io": {
+          "auth": "${REGISTRY_TOKEN}"  # Replace this with your token
+        }
+      }
+    }
 ```
 
 ### 2. Add Repository to Fleet
@@ -79,6 +75,9 @@ Ensure your target cluster has the label `environment: production` to match the 
 1. Navigate to "Continuous Delivery" → "Git Repos"
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
+4. Note that the bundles will deploy in the proper order:
+   - First, the suse-ai-setup bundle (namespace and registry secret)
+   - Then, the GPU operator and suse-ai applications
 
 ## Troubleshooting
 
@@ -87,14 +86,11 @@ Ensure your target cluster has the label `environment: production` to match the 
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
 
-## Customization
-
-To customize any of the Helm chart values, modify the corresponding `fleet.yaml` file in the appropriate chart directory.
-
 ## Notes about GPU Configuration
 
 The GPU Operator is configured with the following settings for RKE2:
 
 - Driver installation is disabled (assuming pre-installed drivers)
 - Toolkit environment variables are set for RKE2 containerd configuration
-- The nvidia runtime is set as the default for containerd 
+- The nvidia runtime is set as the default for containerd
+- Version is pinned to 24.6.0 which has been tested and found to be stable 

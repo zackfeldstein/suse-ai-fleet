@@ -4,5 +4,18 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       environment: production
-  # Optional: specify a particular cluster name if needed
-  # clusterName: your-cluster-name 
+  # You can also use a specific cluster name if needed
+  # clusterName: your-cluster-name
+  
+  # Define the order of dependency
+  dependsOn:
+  - name: suse-ai-namespace-setup
+  
+- name: suse-ai-namespace-setup
+  clusterSelector:
+    matchLabels:
+      environment: production
+  # You can also use a specific cluster name if needed
+  # clusterName: your-cluster-name
+  paths:
+  - suse-ai-setup 
