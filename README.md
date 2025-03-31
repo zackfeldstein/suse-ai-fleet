@@ -5,12 +5,16 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 - Ollama
 - Milvus
 - Open WebUI
+- NVIDIA GPU Operator
 
 ## Repository Structure
 
 ```
 fleet-resources/
 ├── fleet.yaml                # Main Fleet configuration
+├── gpu-operator/             # NVIDIA GPU Operator
+│   ├── namespace.yaml        # Namespace definition
+│   └── fleet.yaml            # GPU Operator helm chart
 ├── suse-ai/
 │   ├── namespace.yaml        # Namespace definition
 │   ├── registry-secret.yaml  # Registry authentication template
@@ -28,6 +32,7 @@ fleet-resources/
 1. Rancher with Fleet enabled
 2. Kubernetes cluster registered with Rancher
 3. OCI registry token for dp.apps.rancher.io
+4. NVIDIA GPUs in your cluster for Ollama
 
 ## Setup Instructions
 
@@ -79,8 +84,17 @@ Ensure your target cluster has the label `environment: production` to match the 
 
 - If charts fail to deploy due to authentication issues, verify that the `application-collection` secret is correctly configured
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
+- For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
 
 ## Customization
 
-To customize any of the Helm chart values, modify the corresponding `fleet.yaml` file in the appropriate chart directory. 
+To customize any of the Helm chart values, modify the corresponding `fleet.yaml` file in the appropriate chart directory.
+
+## Notes about GPU Configuration
+
+The GPU Operator is configured with the following settings for RKE2:
+
+- Driver installation is disabled (assuming pre-installed drivers)
+- Toolkit environment variables are set for RKE2 containerd configuration
+- The nvidia runtime is set as the default for containerd 

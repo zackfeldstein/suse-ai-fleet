@@ -45,4 +45,4 @@ helm:
     - name: MILVUS_URI
       value: http://milvus.suse-ai.svc.cluster.local:19530
     - name: INSTALL_NLTK_DATASETS
-      value: "true" 
+      value: "true"

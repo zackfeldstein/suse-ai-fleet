@@ -47,4 +47,4 @@ helm:
         resources:
           requests:
             storage: 8Gi
-        storageClassName: "local-path" 
+        storageClassName: "local-path"
