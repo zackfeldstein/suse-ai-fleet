@@ -3,6 +3,8 @@ helm:
   repo: https://helm.ngc.nvidia.com/nvidia
   chart: gpu-operator
   releaseName: gpu-operator
+  wait: true
+  timeout: 600s
   values:
     driver:
       enabled: false
@@ -16,4 +18,8 @@ helm:
       - name: CONTAINERD_RUNTIME_CLASS
         value: nvidia
       - name: CONTAINERD_SET_AS_DEFAULT
-        value: "true" 
+        value: "true"
+    operator:
+      defaultRuntime: containerd
+    nodeFeatureDiscovery:
+      enabled: false 
