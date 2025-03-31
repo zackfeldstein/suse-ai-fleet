@@ -11,23 +11,23 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 
 ```
 fleet-resources/
-├── fleet.yaml                # Main Fleet configuration with deployment order
-├── gpu-operator-setup/       # GPU Operator namespace setup
-│   ├── fleet.yaml            # Empty namespace configuration
-│   └── namespace.yaml        # gpu-operator namespace definition
-├── gpu-operator/             # NVIDIA GPU Operator resources
-│   └── fleet.yaml            # GPU Operator helm chart configuration
-├── suse-ai-setup/            # SUSE AI namespace and secret setup
-│   ├── fleet.yaml            # Empty namespace configuration
-│   ├── namespace.yaml        # suse-ai namespace definition
-│   └── registry-secret.yaml  # Registry secret template
-├── suse-ai/                  # Resources for suse-ai namespace
+├── fleet.yaml                  # Main Fleet configuration with deployment order
+├── gpu-operator-direct/        # Direct deployment of GPU Operator
+│   ├── fleet.yaml              # Namespace targeting configuration
+│   └── operator/               # GPU Operator resources
+│       ├── gpu-operator.yaml   # HelmChart resource for GPU Operator
+│       └── test-pod.yaml       # Test pod to validate GPU access
+├── suse-ai-setup/              # SUSE AI namespace and secret setup
+│   ├── fleet.yaml              # Empty namespace configuration
+│   ├── namespace.yaml          # suse-ai namespace definition
+│   └── registry-secret.yaml    # Registry secret template
+├── suse-ai/                    # Resources for suse-ai namespace
 │   └── charts/
-│       ├── ollama/           # Ollama chart configuration
+│       ├── ollama/             # Ollama chart configuration
 │       │   └── fleet.yaml
-│       ├── milvus/           # Milvus chart configuration
+│       ├── milvus/             # Milvus chart configuration
 │       │   └── fleet.yaml
-│       └── open-webui/       # Open WebUI chart configuration
+│       └── open-webui/         # Open WebUI chart configuration
 │           └── fleet.yaml
 ```
 
@@ -78,18 +78,17 @@ Ensure your target cluster has the label `environment: production` to match the 
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
-   - First, the namespace setup bundles (suse-ai-setup and gpu-operator-setup)
-   - Then, the GPU operator deployment
+   - First, the GPU operator direct deployment
+   - Then, the suse-ai namespace and secret setup
    - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI)
 
 ## Deployment Order
 
 The deployment is structured to respect these dependencies:
 
-1. `suse-ai-namespace-setup` - Creates the suse-ai namespace
-2. `gpu-operator-namespace-setup` - Creates the gpu-operator namespace
-3. `gpu-operator-deployment` - Deploys the NVIDIA GPU Operator (depends on its namespace)
-4. `suse-ai-deployment` - Deploys all SUSE AI applications (depends on suse-ai namespace and GPU operator)
+1. `gpu-operator-direct` - Deploys the NVIDIA GPU Operator directly with HelmChart resource
+2. `suse-ai-namespace-setup` - Creates the suse-ai namespace and registry secret
+3. `suse-ai-deployment` - Deploys all SUSE AI applications (depends on suse-ai namespace setup)
 
 This order ensures all prerequisites are met before deploying applications.
 
@@ -99,7 +98,11 @@ This order ensures all prerequisites are met before deploying applications.
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
-- If you see "invalid cluster scoped object" errors, make sure the namespace resources are in directories with `defaultNamespace: ""`
+- To verify GPU operator installation, look for the test pod in the gpu-operator namespace:
+  ```
+  kubectl -n gpu-operator get pods nvidia-gpu-test
+  kubectl -n gpu-operator logs nvidia-gpu-test
+  ```
 
 ## Notes about GPU Configuration
 

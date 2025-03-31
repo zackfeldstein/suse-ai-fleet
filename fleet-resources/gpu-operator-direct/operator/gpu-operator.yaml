@@ -1,14 +1,15 @@
-# Explicit namespace targeting setting
-namespace: gpu-operator
-
-helm:
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: gpu-operator
+  namespace: gpu-operator
+spec:
   repo: https://helm.ngc.nvidia.com/nvidia
   chart: gpu-operator
   version: 24.6.0
-  releaseName: gpu-operator
-  wait: true
-  namespace: gpu-operator
-  values:
+  targetNamespace: gpu-operator
+  createNamespace: true
+  valuesContent: |-
     driver:
       enabled: false
     toolkit:

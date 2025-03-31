@@ -1,5 +1,12 @@
 defaultNamespace: fleet-default
 targetCustomizations:
+- name: gpu-operator-direct
+  clusterSelector:
+    matchLabels:
+      environment: production
+  paths:
+  - gpu-operator-direct
+
 - name: suse-ai-namespace-setup
   clusterSelector:
     matchLabels:
@@ -8,34 +15,18 @@ targetCustomizations:
   defaultNamespace: ""
   paths:
   - suse-ai-setup
-
-- name: gpu-operator-namespace-setup
-  clusterSelector:
-    matchLabels:
-      environment: production
-  # No namespace restriction to allow cluster-scoped resources
-  defaultNamespace: ""
-  paths:
-  - gpu-operator-setup
-
-- name: gpu-operator-deployment
-  clusterSelector:
-    matchLabels:
-      environment: production
-  namespace: gpu-operator
   dependsOn:
-  - name: gpu-operator-namespace-setup
-  paths:
-  - gpu-operator
+  - name: gpu-operator-direct
 
 - name: suse-ai-deployment
   clusterSelector:
     matchLabels:
       environment: production
+  # Force namespace to suse-ai using both settings
   namespace: suse-ai
+  targetNamespace: suse-ai
   # Define the order of dependency
   dependsOn:
   - name: suse-ai-namespace-setup
-  - name: gpu-operator-deployment
   paths:
   - suse-ai/charts 

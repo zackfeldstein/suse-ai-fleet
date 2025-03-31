@@ -1,0 +1,6 @@
+# Specify that all resources will go to the gpu-operator namespace
+namespace: gpu-operator
+# This is needed to prevent Fleet from rendering templates when resources
+# specify their own namespace
+defaultNamespace: gpu-operator
+targetNamespace: gpu-operator 
