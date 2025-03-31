@@ -11,12 +11,14 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 
 ```
 fleet-resources/
-├── fleet.yaml                # Main Fleet configuration
-├── gpu-operator/             # NVIDIA GPU Operator
-│   ├── namespace.yaml        # Namespace definition
-│   └── fleet.yaml            # GPU Operator helm chart
-├── suse-ai-setup/            # Namespace and secret setup
-│   ├── fleet.yaml            # Setup bundle configuration
+├── fleet.yaml                # Main Fleet configuration with deployment order
+├── gpu-operator-setup/       # GPU Operator namespace setup
+│   ├── fleet.yaml            # Empty namespace configuration
+│   └── namespace.yaml        # gpu-operator namespace definition
+├── gpu-operator/             # NVIDIA GPU Operator resources
+│   └── fleet.yaml            # GPU Operator helm chart configuration
+├── suse-ai-setup/            # SUSE AI namespace and secret setup
+│   ├── fleet.yaml            # Empty namespace configuration
 │   ├── namespace.yaml        # suse-ai namespace definition
 │   └── registry-secret.yaml  # Registry secret template
 ├── suse-ai/                  # Resources for suse-ai namespace
@@ -76,8 +78,20 @@ Ensure your target cluster has the label `environment: production` to match the 
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
-   - First, the suse-ai-setup bundle (namespace and registry secret)
-   - Then, the GPU operator and suse-ai applications
+   - First, the namespace setup bundles (suse-ai-setup and gpu-operator-setup)
+   - Then, the GPU operator deployment
+   - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI)
+
+## Deployment Order
+
+The deployment is structured to respect these dependencies:
+
+1. `suse-ai-namespace-setup` - Creates the suse-ai namespace
+2. `gpu-operator-namespace-setup` - Creates the gpu-operator namespace
+3. `gpu-operator-deployment` - Deploys the NVIDIA GPU Operator (depends on its namespace)
+4. `suse-ai-deployment` - Deploys all SUSE AI applications (depends on suse-ai namespace and GPU operator)
+
+This order ensures all prerequisites are met before deploying applications.
 
 ## Troubleshooting
 
@@ -85,6 +99,7 @@ Ensure your target cluster has the label `environment: production` to match the 
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
+- If you see "invalid cluster scoped object" errors, make sure the namespace resources are in directories with `defaultNamespace: ""`
 
 ## Notes about GPU Configuration
 

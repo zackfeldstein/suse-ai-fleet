@@ -1,2 +1,3 @@
-defaultNamespace: fleet-default
-# No namespace setting here to allow cluster-scoped resources 
+# No namespace setting at all to allow cluster-scoped resources
+# Using empty string explicitly to allow cluster-scoped resources
+defaultNamespace: "" 
