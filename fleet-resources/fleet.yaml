@@ -1,4 +1,4 @@
-namespace: fleet-default
+defaultNamespace: fleet-default
 targetCustomizations:
 - name: suse-ai-deployment
   clusterSelector:

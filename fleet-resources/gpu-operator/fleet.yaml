@@ -7,6 +7,7 @@ helm:
     driver:
       enabled: false
     toolkit:
+      enabled: true
       env:
       - name: CONTAINERD_CONFIG
         value: /var/lib/rancher/rke2/agent/etc/containerd/config.toml.tmpl
@@ -15,4 +16,15 @@ helm:
       - name: CONTAINERD_RUNTIME_CLASS
         value: nvidia
       - name: CONTAINERD_SET_AS_DEFAULT
-        value: "true" 
+        value: "false"
+    devicePlugin:
+      enabled: true
+      config:
+        name: "nvidia-device-plugin"
+        default: "nvidia-device-plugin-configmap"
+    runtimeClass:
+      enabled: true
+    operator:
+      defaultRuntime: containerd
+    validator:
+      enabled: false 
