@@ -1,9 +1,9 @@
-defaultNamespace: suse-ai
 helm:
   repo: oci://dp.apps.rancher.io/charts
   chart: open-webui
   version: 5.16.0
   releaseName: open-webui
+  namespace: suse-ai
   values:
     global:
       imagePullSecrets:

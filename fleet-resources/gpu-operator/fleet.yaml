@@ -4,6 +4,7 @@ helm:
   version: 24.6.0
   releaseName: gpu-operator
   wait: true
+  namespace: gpu-operator
   values:
     driver:
       enabled: false

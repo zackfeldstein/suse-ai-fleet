@@ -22,7 +22,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       environment: production
-  defaultNamespace: gpu-operator
+  namespace: gpu-operator
   dependsOn:
   - name: gpu-operator-namespace-setup
   paths:
@@ -32,7 +32,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       environment: production
-  defaultNamespace: suse-ai
+  namespace: suse-ai
   # Define the order of dependency
   dependsOn:
   - name: suse-ai-namespace-setup
