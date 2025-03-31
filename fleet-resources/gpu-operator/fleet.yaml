@@ -2,24 +2,20 @@ defaultNamespace: gpu-operator
 helm:
   repo: https://helm.ngc.nvidia.com/nvidia
   chart: gpu-operator
+  version: 24.6.0
   releaseName: gpu-operator
   wait: true
-  timeout: 600s
   values:
     driver:
       enabled: false
     toolkit:
       enabled: true
       env:
-      - name: CONTAINERD_SOCKET
-        value: /run/k3s/containerd/containerd.sock
       - name: CONTAINERD_CONFIG
         value: /var/lib/rancher/rke2/agent/etc/containerd/config.toml.tmpl
+      - name: CONTAINERD_SOCKET
+        value: /run/k3s/containerd/containerd.sock
       - name: CONTAINERD_RUNTIME_CLASS
         value: nvidia
       - name: CONTAINERD_SET_AS_DEFAULT
-        value: "true"
-    operator:
-      defaultRuntime: containerd
-    nodeFeatureDiscovery:
-      enabled: false 
+        value: "true" 
