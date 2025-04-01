@@ -3,6 +3,7 @@
 This repository contains Kubernetes manifests for deploying the SUSE AI stack using Rancher Fleet. The deployment includes:
 
 - NVIDIA GPU Operator
+- Cert-Manager (for TLS certificate management)
 - Ollama
 - Milvus
 - Open WebUI
@@ -18,6 +19,8 @@ fleet-resources/
 │   ├── gpu-operator/         # GPU Operator chart
 │   │   ├── fleet.yaml        # GPU-specific fleet configuration
 │   │   └── values.yaml       # GPU operator values
+│   ├── cert-manager/         # Cert-Manager for TLS certificates
+│   │   └── fleet.yaml        # Cert-Manager fleet configuration
 │   ├── ollama/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
@@ -36,6 +39,20 @@ fleet-resources/
 2. Kubernetes cluster registered with Rancher
 3. OCI registry token for dp.apps.rancher.io
 4. NVIDIA GPUs in your cluster for Ollama
+5. Before deploying, you must manually create the `suse-ai` namespace and setup the registry secret:
+
+   ```bash
+   # Create the namespace
+   kubectl create ns suse-ai
+   
+   # Create the registry secret in the suse-ai namespace
+   kubectl create secret docker-registry application-collection \
+     --docker-server=dp.apps.rancher.io \
+     --docker-username=APPCO_USERNAME \
+     --docker-password=APPCO_USER_TOKEN \
+     -n suse-ai
+   ```
+   Replace `APPCO_USERNAME` and `APPCO_USER_TOKEN` with your actual credentials.
 
 ## Setup Instructions
 
@@ -86,8 +103,9 @@ Ensure your target cluster has the label `environment: production` to match the 
 The deployment is structured to respect these dependencies:
 
 1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
-2. `registry-secret` - Creates the registry secret for pulling images
-3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and registry secret)
+2. `cert-manager` - Deploys Cert-Manager for TLS certificate management
+3. `registry-secret` - Creates the registry secret for pulling images
+4. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator, cert-manager, and registry secret)
 
 This order ensures all prerequisites are met before deploying applications.
 
@@ -107,6 +125,13 @@ Each chart specifies its target namespace in its own fleet.yaml file:
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
+- If custom values aren't being applied to Helm charts, ensure each chart's `fleet.yaml` includes the `valuesFiles` section pointing to the corresponding `values.yaml` file:
+  ```yaml
+  helm:
+    # other configuration...
+    valuesFiles:
+      - values.yaml
+  ```
 
 ## Notes about GPU Configuration
 
@@ -115,4 +140,4 @@ The GPU Operator is configured with the following settings for RKE2:
 - Driver installation is disabled (assuming pre-installed drivers)
 - Toolkit environment variables are set for RKE2 containerd configuration
 - The nvidia runtime is set as the default for containerd
-- Version is pinned to 24.6.0 which has been tested and found to be stable 
+- Version is pinned to 24.6.0 which has been tested and found to be stable
