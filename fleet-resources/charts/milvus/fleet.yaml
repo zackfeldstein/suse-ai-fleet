@@ -2,6 +2,8 @@ defaultNamespace: suse-ai
 helm:
   chart: oci://dp.apps.rancher.io/charts/milvus
   version: 4.2.2
-  releaseName: milvus 
+  releaseName: milvus
+  valuesFiles:
+    - values.yaml
   credentials:
     - name: application-collection

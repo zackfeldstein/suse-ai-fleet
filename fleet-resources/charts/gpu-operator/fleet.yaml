@@ -3,4 +3,6 @@ helm:
   repo: https://helm.ngc.nvidia.com/nvidia
   chart: gpu-operator
   version: 24.6.0
-  releaseName: gpu-operator 
+  releaseName: gpu-operator
+  valuesFiles:
+    - values.yaml 

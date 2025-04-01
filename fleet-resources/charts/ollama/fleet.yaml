@@ -3,5 +3,7 @@ helm:
   chart: oci://dp.apps.rancher.io/charts/ollama
   version: 0.63.0
   releaseName: ollama
+  valuesFiles:
+    - values.yaml
   credentials:
     - name: helm-registry-secret 
