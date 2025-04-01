@@ -1,2 +1,0 @@
-# No namespace setting to allow cluster-scoped resources
-defaultNamespace: "" 

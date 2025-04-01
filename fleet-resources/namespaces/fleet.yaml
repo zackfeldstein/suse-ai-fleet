@@ -1,0 +1,2 @@
+# Set empty defaultNamespace to allow cluster-scoped resources
+defaultNamespace: "" 

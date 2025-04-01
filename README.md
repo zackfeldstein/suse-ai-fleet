@@ -9,26 +9,29 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 
 ## Repository Structure
 
+The repository follows the standard Fleet pattern for multiple Helm charts:
+
 ```
 fleet-resources/
-├── fleet.yaml                  # Main Fleet configuration with deployment order
-├── gpu-operator-direct/        # Direct deployment of GPU Operator
-│   ├── fleet.yaml              # Namespace targeting configuration
-│   └── operator/               # GPU Operator resources
-│       ├── gpu-operator.yaml   # HelmChart resource for GPU Operator
-│       └── test-pod.yaml       # Test pod to validate GPU access
-├── suse-ai-setup/              # SUSE AI namespace and secret setup
-│   ├── fleet.yaml              # Empty namespace configuration
-│   ├── namespace.yaml          # suse-ai namespace definition
-│   └── registry-secret.yaml    # Registry secret template
-├── suse-ai/                    # Resources for suse-ai namespace
-│   └── charts/
-│       ├── ollama/             # Ollama chart configuration
-│       │   └── fleet.yaml
-│       ├── milvus/             # Milvus chart configuration
-│       │   └── fleet.yaml
-│       └── open-webui/         # Open WebUI chart configuration
-│           └── fleet.yaml
+├── fleet.yaml                # Main fleet configuration with ordering
+├── charts/                   # All Helm charts go here
+│   ├── gpu-operator/         # GPU Operator chart
+│   │   ├── fleet.yaml        # GPU-specific fleet configuration
+│   │   └── values.yaml       # GPU operator values
+│   ├── ollama/
+│   │   ├── fleet.yaml
+│   │   └── values.yaml
+│   ├── milvus/
+│   │   ├── fleet.yaml
+│   │   └── values.yaml
+│   └── open-webui/
+│       ├── fleet.yaml
+│       └── values.yaml
+└── namespaces/               # Namespace definitions
+    ├── fleet.yaml            # Namespace-specific fleet configuration
+    ├── gpu-operator.yaml     # GPU operator namespace
+    ├── suse-ai.yaml          # SUSE AI namespace
+    └── registry-secret.yaml  # Registry secret for OCI
 ```
 
 ## Prerequisites
@@ -42,7 +45,7 @@ fleet-resources/
 
 ### 1. Create Registry Secret
 
-Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `suse-ai-setup/registry-secret.yaml` file:
+Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `namespaces/registry-secret.yaml` file:
 
 ```yaml
 stringData:
@@ -78,17 +81,17 @@ Ensure your target cluster has the label `environment: production` to match the 
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
-   - First, the GPU operator direct deployment
-   - Then, the suse-ai namespace and secret setup
-   - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI)
+   - First, the namespaces will be created
+   - Then, the GPU operator will be deployed
+   - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
 
 ## Deployment Order
 
 The deployment is structured to respect these dependencies:
 
-1. `gpu-operator-direct` - Deploys the NVIDIA GPU Operator directly with HelmChart resource
-2. `suse-ai-namespace-setup` - Creates the suse-ai namespace and registry secret
-3. `suse-ai-deployment` - Deploys all SUSE AI applications (depends on suse-ai namespace setup)
+1. `namespaces` - Creates the required namespaces and secrets
+2. `gpu-operator` - Deploys the NVIDIA GPU Operator (depends on namespaces)
+3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on namespaces and GPU operator)
 
 This order ensures all prerequisites are met before deploying applications.
 
@@ -98,11 +101,6 @@ This order ensures all prerequisites are met before deploying applications.
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
-- To verify GPU operator installation, look for the test pod in the gpu-operator namespace:
-  ```
-  kubectl -n gpu-operator get pods nvidia-gpu-test
-  kubectl -n gpu-operator logs nvidia-gpu-test
-  ```
 
 ## Notes about GPU Configuration
 
