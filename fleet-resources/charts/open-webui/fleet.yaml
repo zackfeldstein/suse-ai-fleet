@@ -1,6 +1,6 @@
 defaultNamespace: suse-ai
 helm:
-  repo: https://dp.apps.rancher.io/charts
+  repo: https://dp.apps.rancher.io/charts/open-webui
   chart: open-webui
   version: 5.16.0
   releaseName: open-webui 

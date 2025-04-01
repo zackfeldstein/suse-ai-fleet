@@ -1,6 +1,6 @@
 defaultNamespace: suse-ai
 helm:
-  repo: https://dp.apps.rancher.io/charts
+  repo: https://dp.apps.rancher.io/charts/ollama
   chart: ollama
   version: 0.63.0
   releaseName: ollama
