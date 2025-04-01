@@ -22,7 +22,7 @@ ingress:
   class: ""
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-  host: suse-ollama-webui
+  host: ollama.kcdemos.com
   tls: true
 extraEnvVars:
 - name: DEFAULT_USER_ROLE
