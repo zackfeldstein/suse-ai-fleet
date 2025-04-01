@@ -14,7 +14,7 @@ The repository follows the standard Fleet pattern for multiple Helm charts:
 ```
 fleet-resources/
 ├── fleet.yaml                # Main fleet configuration with ordering
-├── charts/                   # All Helm charts go here
+├── charts/                   # All Helm charts and resources go here
 │   ├── gpu-operator/         # GPU Operator chart
 │   │   ├── fleet.yaml        # GPU-specific fleet configuration
 │   │   └── values.yaml       # GPU operator values
@@ -24,14 +24,10 @@ fleet-resources/
 │   ├── milvus/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
-│   └── open-webui/
-│       ├── fleet.yaml
-│       └── values.yaml
-└── namespaces/               # Namespace definitions
-    ├── fleet.yaml            # Namespace-specific fleet configuration
-    ├── gpu-operator.yaml     # GPU operator namespace
-    ├── suse-ai.yaml          # SUSE AI namespace
-    └── registry-secret.yaml  # Registry secret for OCI
+│   ├── open-webui/
+│   │   ├── fleet.yaml
+│   │   └── values.yaml
+│   └── registry-secret.yaml  # Registry secret for OCI
 ```
 
 ## Prerequisites
@@ -45,7 +41,7 @@ fleet-resources/
 
 ### 1. Create Registry Secret
 
-Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `namespaces/registry-secret.yaml` file:
+Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `charts/registry-secret.yaml` file:
 
 ```yaml
 stringData:
@@ -81,19 +77,29 @@ Ensure your target cluster has the label `environment: production` to match the 
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
-   - First, the namespaces will be created
-   - Then, the GPU operator will be deployed
+   - First, the GPU operator will be deployed
+   - Then, the registry secret will be created
    - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
 
 ## Deployment Order
 
 The deployment is structured to respect these dependencies:
 
-1. `namespaces` - Creates the required namespaces and secrets
-2. `gpu-operator` - Deploys the NVIDIA GPU Operator (depends on namespaces)
-3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on namespaces and GPU operator)
+1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
+2. `registry-secret` - Creates the registry secret for pulling images
+3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and registry secret)
 
 This order ensures all prerequisites are met before deploying applications.
+
+## Notes on Namespace Handling
+
+This repository takes advantage of Fleet's automatic namespace creation feature. As described in the [Fleet documentation](https://fleet.rancher.io/namespaces):
+
+> "When deploying a Fleet bundle, the specified namespace will automatically be created if it does not already exist."
+
+Each chart specifies its target namespace in its own fleet.yaml file:
+- GPU Operator deploys to the `gpu-operator` namespace
+- All SUSE AI applications deploy to the `suse-ai` namespace
 
 ## Troubleshooting
 
