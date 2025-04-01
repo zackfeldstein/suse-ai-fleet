@@ -23,7 +23,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
   host: ollama.kcdemos.com
-  tls: true
+  tls: false
 extraEnvVars:
 - name: DEFAULT_USER_ROLE
   value: "user"
