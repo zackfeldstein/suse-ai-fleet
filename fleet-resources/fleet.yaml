@@ -17,6 +17,13 @@ targetCustomizations:
       environment: production
   paths:
   - charts/gpu-operator-namespace
+
+- name: cert-manager
+  clusterSelector:
+    matchLabels:
+      environment: production
+  paths:
+  - charts/cert-manager
   
 - name: gpu-operator
   clusterSelector:
@@ -43,6 +50,7 @@ targetCustomizations:
   dependsOn:
   - name: gpu-operator
   - name: registry-secret
+  - name: cert-manager
   paths:
   - charts/ollama
   - charts/milvus
