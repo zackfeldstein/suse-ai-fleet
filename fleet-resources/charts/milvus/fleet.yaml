@@ -1,6 +1,6 @@
 defaultNamespace: suse-ai
 helm:
-  repo: oci://dp.apps.rancher.io/charts/milvus
+  repo: https://dp.apps.rancher.io/charts
   chart: milvus
   version: 4.2.2
   releaseName: milvus 
