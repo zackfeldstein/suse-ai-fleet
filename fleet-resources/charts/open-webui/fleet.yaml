@@ -4,3 +4,5 @@ helm:
   chart: open-webui
   version: 5.16.0
   releaseName: open-webui 
+  credentials:
+    - name: application-collection

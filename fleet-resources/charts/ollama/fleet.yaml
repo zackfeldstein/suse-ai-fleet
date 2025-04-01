@@ -3,4 +3,6 @@ helm:
   repo: https://dp.apps.rancher.io/charts
   chart: ollama
   version: 0.63.0
-  releaseName: ollama 
+  releaseName: ollama
+  credentials:
+    - name: application-collection

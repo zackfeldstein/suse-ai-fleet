@@ -4,3 +4,5 @@ helm:
   chart: milvus
   version: 4.2.2
   releaseName: milvus 
+  credentials:
+    - name: application-collection
