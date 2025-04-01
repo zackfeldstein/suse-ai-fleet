@@ -2,7 +2,7 @@ global:
   imagePullSecrets:
   - application-collection
 cluster:
-  enabled: True
+  enabled: false
 standalone:
   persistence:
     persistentVolumeClaim:

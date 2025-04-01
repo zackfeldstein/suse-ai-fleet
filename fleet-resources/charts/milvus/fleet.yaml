@@ -4,6 +4,4 @@ helm:
   version: 4.2.2
   releaseName: milvus
   valuesFiles:
-    - values.yaml
-  credentials:
-    - name: application-collection
+    - ./values.yaml
