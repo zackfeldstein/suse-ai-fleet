@@ -12,6 +12,7 @@ etcd:
   persistence:
     storageClassName: local-path
 minio:
+  enabled: false
   mode: distributed
   replicas: 4
   rootUser: "admin"
@@ -22,7 +23,7 @@ minio:
     requests:
       memory: 1024Mi
 kafka:
-  enabled: true
+  enabled: false
   name: kafka
   replicaCount: 3
   broker:
