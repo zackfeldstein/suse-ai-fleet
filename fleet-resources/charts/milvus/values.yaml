@@ -22,7 +22,7 @@ minio:
   mode: standalone
   replicas: 1
   tls:
-    enabled: true
+    enabled: false
 
 kafka:
   enabled: false
