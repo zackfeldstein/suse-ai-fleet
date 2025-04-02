@@ -12,8 +12,18 @@ etcd:
   persistence:
     storageClassName: local-path
 minio:
-  enabled: false
-
+  enabled: true
+  mode: standalone
+  replicas: 1
+  rootUser: "admin"
+  rootPassword: "adminminio"
+  persistence:
+    storageClass: local-path
+  resources:
+    requests:
+      memory: 1024Mi
+  tls:
+    enabled: false 
 kafka:
   enabled: false
   name: kafka
