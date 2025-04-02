@@ -22,6 +22,8 @@ minio:
   resources:
     requests:
       memory: 1024Mi
+  tls:
+    enabled: false 
 kafka:
   enabled: false
   name: kafka
