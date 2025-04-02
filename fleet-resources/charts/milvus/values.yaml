@@ -23,8 +23,7 @@ minio:
   resources:
     requests:
       memory: 1024Mi
-  tls:
-    enabled: false  # Make sure this is present to avoid nil pointer issues
+
 kafka:
   enabled: false
   name: kafka
