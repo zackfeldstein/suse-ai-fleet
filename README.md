@@ -30,7 +30,6 @@ fleet-resources/
 │   ├── open-webui/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
-│   └── registry-secret.yaml  # Registry secret for OCI
 ```
 
 ## Prerequisites
@@ -56,23 +55,7 @@ fleet-resources/
 
 ## Setup Instructions
 
-### 1. Create Registry Secret
-
-Before deploying via Fleet, you need to set up the registry authentication token by replacing the placeholder in the `charts/registry-secret.yaml` file:
-
-```yaml
-stringData:
-  .dockerconfigjson: |-
-    {
-      "auths": {
-        "dp.apps.rancher.io": {
-          "auth": "${REGISTRY_TOKEN}"  # Replace this with your token
-        }
-      }
-    }
-```
-
-### 2. Add Repository to Fleet
+### 1. Add Repository to Fleet
 
 1. In the Rancher UI, navigate to "Continuous Delivery" → "Git Repos"
 2. Click "Add Repository"
@@ -84,18 +67,18 @@ stringData:
    - Cluster Selector: Match labels that correspond to your target cluster
    - For authentication, select the appropriate method for your GitHub repo
 
-### 3. Configure Cluster Labels
+### 2. Configure Cluster Labels
 
 Ensure your target cluster has the label `environment: production` to match the Fleet configuration, or modify the `fleet.yaml` file to match your existing labels.
 
-### 4. Monitor Deployment
+### 3. Monitor Deployment
 
 1. Navigate to "Continuous Delivery" → "Git Repos"
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
    - First, the GPU operator will be deployed
-   - Then, the registry secret will be created
+   - Then, cert-manager will be deployed
    - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
 
 ## Deployment Order
@@ -104,8 +87,7 @@ The deployment is structured to respect these dependencies:
 
 1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
 2. `cert-manager` - Deploys Cert-Manager for TLS certificate management
-3. `registry-secret` - Creates the registry secret for pulling images
-4. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator, cert-manager, and registry secret)
+3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and cert-manager)
 
 This order ensures all prerequisites are met before deploying applications.
 
