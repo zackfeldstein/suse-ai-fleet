@@ -1,6 +1,6 @@
-
-imagePullSecrets:
-- application-collection
+global:
+  imagePullSecrets:
+  - application-collection
 cluster:
   enabled: false
 standalone:
