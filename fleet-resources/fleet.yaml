@@ -34,22 +34,12 @@ targetCustomizations:
   paths:
   - charts/gpu-operator
 
-- name: registry-secret
-  clusterSelector:
-    matchLabels:
-      environment: production
-  dependsOn:
-  - name: suse-ai-namespace
-  paths:
-  - charts/registry-secret.yaml
-
 - name: suse-ai-apps
   clusterSelector:
     matchLabels:
       environment: production
   dependsOn:
   - name: gpu-operator
-  - name: registry-secret
   - name: cert-manager
   paths:
   - charts/ollama

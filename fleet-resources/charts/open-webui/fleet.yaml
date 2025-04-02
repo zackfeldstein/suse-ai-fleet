@@ -5,5 +5,3 @@ helm:
   releaseName: open-webui
   valuesFiles:
     - values.yaml
-  credentials:
-    - name: application-collection
