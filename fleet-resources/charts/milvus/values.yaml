@@ -9,23 +9,18 @@ standalone:
       storageClass: local-path
 pulsar:
   enabled: false
-  
+
+pulsarv3:
+  enabled: false
+
 etcd:
   replicaCount: 1
   persistence:
     storageClassName: local-path
 minio:
-  enabled: true
-  mode: standalone  # or "distributed" if you want multiple replicas
-  replicas: 1
-  rootUser: "admin"
-  rootPassword: "adminminio"
-  persistence:
-    enabled: true
-    storageClass: local-path
-  resources:
-    requests:
-      memory: 1024Mi
+  enabled: false
+  tls:
+    enabled: false
 
 kafka:
   enabled: false
