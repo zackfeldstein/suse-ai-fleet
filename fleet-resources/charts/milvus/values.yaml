@@ -11,6 +11,8 @@ etcd:
   replicaCount: 1
   persistence:
     storageClassName: local-path
+minio:
+  enabled: false
 
 kafka:
   enabled: false
