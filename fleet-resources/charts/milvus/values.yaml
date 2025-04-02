@@ -13,17 +13,18 @@ etcd:
     storageClassName: local-path
 minio:
   enabled: true
-  mode: standalone
+  mode: standalone  # or "distributed" if you want multiple replicas
   replicas: 1
   rootUser: "admin"
   rootPassword: "adminminio"
   persistence:
+    enabled: true
     storageClass: local-path
   resources:
     requests:
       memory: 1024Mi
   tls:
-    enabled: false 
+    enabled: false  # Make sure this is present to avoid nil pointer issues
 kafka:
   enabled: false
   name: kafka
