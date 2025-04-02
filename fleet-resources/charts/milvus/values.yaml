@@ -7,6 +7,9 @@ standalone:
   persistence:
     persistentVolumeClaim:
       storageClass: local-path
+pulsar:
+  enabled: false
+  
 etcd:
   replicaCount: 1
   persistence:
