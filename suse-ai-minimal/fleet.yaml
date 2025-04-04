@@ -4,13 +4,6 @@ defaultNamespace: fleet-default
 # Define the order by adding dependencies
 targetCustomizations:
 
-- name: suse-ai-namespace
-  clusterSelector:
-    matchLabels:
-      environment: production
-  paths:
-  - suse-ai-namespace
-
 - name: gpu-operator-namespace
   clusterSelector:
     matchLabels:

@@ -38,20 +38,23 @@ fleet-resources/
 2. Kubernetes cluster registered with Rancher
 3. OCI registry token for dp.apps.rancher.io
 4. NVIDIA GPUs in your cluster for Ollama
-5. Before deploying, you must manually create the `suse-ai` namespace and setup the registry secret:
+5. **IMPORTANT**: You MUST manually create the `suse-ai` namespace and the `application-collection` secret BEFORE deploying this repository with Fleet:
 
    ```bash
-   # Create the namespace
+   # Step 1: Create the suse-ai namespace
    kubectl create ns suse-ai
    
-   # Create the registry secret in the suse-ai namespace
+   # Step 2: Create the application-collection secret in the suse-ai namespace
+   # This secret is required for pulling images from the SUSE Application Catalog
    kubectl create secret docker-registry application-collection \
      --docker-server=dp.apps.rancher.io \
      --docker-username=APPCO_USERNAME \
      --docker-password=APPCO_USER_TOKEN \
      -n suse-ai
    ```
-   Replace `APPCO_USERNAME` and `APPCO_USER_TOKEN` with your actual credentials.
+   Replace `APPCO_USERNAME` and `APPCO_USER_TOKEN` with your actual SUSE Application Collection credentials.
+
+   The deployment will fail if this namespace and secret don't exist, as the Fleet repository assumes they are already created.
 
 ## Setup Instructions
 
@@ -93,17 +96,14 @@ This order ensures all prerequisites are met before deploying applications.
 
 ## Notes on Namespace Handling
 
-This repository takes advantage of Fleet's automatic namespace creation feature. As described in the [Fleet documentation](https://fleet.rancher.io/namespaces):
-
-> "When deploying a Fleet bundle, the specified namespace will automatically be created if it does not already exist."
-
 Each chart specifies its target namespace in its own fleet.yaml file:
-- GPU Operator deploys to the `gpu-operator` namespace
-- All SUSE AI applications deploy to the `suse-ai` namespace
+- GPU Operator deploys to the `gpu-operator` namespace (created automatically by Fleet)
+- All SUSE AI applications deploy to the `suse-ai` namespace (must be created manually before deployment)
 
 ## Troubleshooting
 
-- If charts fail to deploy due to authentication issues, verify that the `application-collection` secret is correctly configured
+- If charts fail to deploy due to authentication issues, verify that the `application-collection` secret is correctly configured in the `suse-ai` namespace
+- If you see errors like `namespaces "suse-ai" not found`, ensure you've manually created the namespace before deploying
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
 - Check Fleet logs for any errors during chart deployment
