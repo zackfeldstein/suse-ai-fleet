@@ -13,7 +13,7 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 The repository follows the standard Fleet pattern for multiple Helm charts:
 
 ```
-fleet-resources/
+suse-ai-minimal/
 ├── fleet.yaml                # Main fleet configuration with ordering
 ├── charts/                   # All Helm charts and resources go here
 │   ├── gpu-operator/         # GPU Operator chart
@@ -66,9 +66,9 @@ fleet-resources/
    - Name: `suse-ai-fleet`
    - Repository URL: Your GitHub repository URL
    - Branch: `main` (or your default branch)
-   - Path: `fleet-resources`
+   - Path: `suse-ai-minimal`
    - Cluster Selector: Match labels that correspond to your target cluster
-   - For authentication, select the appropriate method for your GitHub repo
+   - For authentication, please select Helm authentication and create a HTTP auth basic secret. Enter your app collection username and token. For the helm Repos ( url Regex) field , put in oci://dp.apps.rancher.io
 
 ### 2. Configure Cluster Labels
 
