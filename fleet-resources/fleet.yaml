@@ -37,14 +37,4 @@ targetCustomizations:
   paths:
   - charts/ollama
   - charts/milvus
-  - charts/open-webui
-
-- name: neuvector
-  clusterSelector:
-    matchLabels:
-      environment: production
-  dependsOn:
-  - name: cert-manager
-  - name: suse-ai-apps
-  paths:
-  - charts/neuvector 
+  - charts/open-webui 

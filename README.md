@@ -4,9 +4,8 @@ This repository contains Kubernetes manifests for deploying the SUSE AI stack us
 
 - NVIDIA GPU Operator
 - Cert-Manager (for TLS certificate management)
-- Ollama
-- Milvus
-- Open WebUI
+- SUSE AI Components (Ollama, Milvus, Open WebUI)
+- NeuVector (for container security)
 
 ## Repository Structure
 
@@ -30,6 +29,9 @@ suse-ai-minimal/
 │   ├── open-webui/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
+│   ├── neuvector/            # NeuVector security platform
+│   │   ├── fleet.yaml        # NeuVector fleet configuration
+│   │   └── values.yaml       # NeuVector values
 ```
 
 ## Prerequisites
@@ -68,7 +70,7 @@ suse-ai-minimal/
    - Branch: `main` (or your default branch)
    - Path: `suse-ai-minimal`
    - Cluster Selector: Match labels that correspond to your target cluster
-   - For authentication, please select Helm authentication and create a HTTP auth basic secret. Enter your app collection username and token. For the helm Repos ( url Regex) field , put in oci://dp.apps.rancher.io
+   - For authentication, select the appropriate method for your GitHub repo
 
 ### 2. Configure Cluster Labels
 
@@ -82,7 +84,8 @@ Ensure your target cluster has the label `environment: production` to match the 
 4. Note that the bundles will deploy in the proper order:
    - First, the GPU operator will be deployed
    - Then, cert-manager will be deployed
-   - Finally, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
+   - Next, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
+   - Finally, NeuVector will be deployed
 
 ## Deployment Order
 
@@ -91,6 +94,7 @@ The deployment is structured to respect these dependencies:
 1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
 2. `cert-manager` - Deploys Cert-Manager for TLS certificate management
 3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and cert-manager)
+4. `neuvector` - Deploys NeuVector container security platform (depends on cert-manager and SUSE AI apps)
 
 This order ensures all prerequisites are met before deploying applications.
 
@@ -99,6 +103,21 @@ This order ensures all prerequisites are met before deploying applications.
 Each chart specifies its target namespace in its own fleet.yaml file:
 - GPU Operator deploys to the `gpu-operator` namespace (created automatically by Fleet)
 - All SUSE AI applications deploy to the `suse-ai` namespace (must be created manually before deployment)
+- NeuVector deploys to the `cattle-neuvector-system` namespace (created automatically by Fleet)
+
+## NeuVector Configuration
+
+The NeuVector deployment includes:
+- NeuVector CRD installation (required before the main chart)
+- NeuVector Controller, Enforcer, and Manager components
+- Integration with Rancher authentication
+- Scanner for vulnerability detection
+
+The default configuration includes:
+- 3 controller replicas for high availability
+- Rancher SSO authentication enabled
+- Automatic certificate generation
+- Vulnerability scanning enabled with CVE updates scheduled daily
 
 ## Troubleshooting
 
@@ -106,6 +125,7 @@ Each chart specifies its target namespace in its own fleet.yaml file:
 - If you see errors like `namespaces "suse-ai" not found`, ensure you've manually created the namespace before deploying
 - For GPU-related issues with Ollama, ensure your nodes have proper NVIDIA drivers installed and the GPU is accessible to the container runtime
 - For GPU Operator issues, check the logs in the gpu-operator namespace
+- For NeuVector issues, check the logs in the cattle-neuvector-system namespace
 - Check Fleet logs for any errors during chart deployment
 - If custom values aren't being applied to Helm charts, ensure each chart's `fleet.yaml` includes the `valuesFiles` section pointing to the corresponding `values.yaml` file:
   ```yaml

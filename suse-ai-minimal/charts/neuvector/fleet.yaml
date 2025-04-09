@@ -1,0 +1,20 @@
+defaultNamespace: cattle-neuvector-system
+helm:
+  # Install the NeuVector CRD first
+  repo: https://charts.rancher.io
+  chart: neuvector-crd
+  version: 105.0.2+up2.8.5
+  releaseName: neuvector-crd
+  createNamespace: true
+
+---
+defaultNamespace: cattle-neuvector-system
+helm:
+  # Install the main NeuVector chart
+  repo: https://charts.rancher.io
+  chart: neuvector
+  version: 105.0.2+up2.8.5
+  releaseName: neuvector
+  createNamespace: true
+  valuesFiles:
+    - values.yaml 
