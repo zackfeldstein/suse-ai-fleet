@@ -1,0 +1,7 @@
+defaultNamespace: cattle-neuvector-system
+helm:
+  repo: https://charts.rancher.io
+  chart: neuvector-crd
+  version: 105.0.2+up2.8.5
+  releaseName: neuvector-crd
+  createNamespace: true 

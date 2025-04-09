@@ -29,6 +29,8 @@ suse-ai-minimal/
 │   ├── open-webui/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
+│   ├── neuvector-crd/        # NeuVector CRDs
+│   │   └── fleet.yaml        # NeuVector CRD fleet configuration
 │   ├── neuvector/            # NeuVector security platform
 │   │   ├── fleet.yaml        # NeuVector fleet configuration
 │   │   └── values.yaml       # NeuVector values
@@ -85,7 +87,7 @@ Ensure your target cluster has the label `environment: production` to match the 
    - First, the GPU operator will be deployed
    - Then, cert-manager will be deployed
    - Next, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
-   - Finally, NeuVector will be deployed
+   - Finally, NeuVector CRDs and then the NeuVector services will be deployed
 
 ## Deployment Order
 
@@ -94,7 +96,8 @@ The deployment is structured to respect these dependencies:
 1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
 2. `cert-manager` - Deploys Cert-Manager for TLS certificate management
 3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and cert-manager)
-4. `neuvector` - Deploys NeuVector container security platform (depends on cert-manager and SUSE AI apps)
+4. `neuvector-crd` - Deploys NeuVector Custom Resource Definitions (depends on cert-manager and SUSE AI apps)
+5. `neuvector` - Deploys NeuVector container security platform (depends on neuvector-crd)
 
 This order ensures all prerequisites are met before deploying applications.
 
@@ -108,7 +111,7 @@ Each chart specifies its target namespace in its own fleet.yaml file:
 ## NeuVector Configuration
 
 The NeuVector deployment includes:
-- NeuVector CRD installation (required before the main chart)
+- NeuVector CRD installation (deployed as a separate chart)
 - NeuVector Controller, Enforcer, and Manager components
 - Integration with Rancher authentication
 - Scanner for vulnerability detection
