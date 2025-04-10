@@ -1,0 +1,5 @@
+# Create the cattle-neuvector-system namespace for NeuVector
+defaultNamespace: default
+# Using the kustomize renderer for simple namespace creation
+kustomize:
+  dir: . 

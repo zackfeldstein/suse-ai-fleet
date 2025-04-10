@@ -15,6 +15,8 @@ The repository follows the standard Fleet pattern for multiple Helm charts:
 suse-ai-minimal/
 ├── fleet.yaml                # Main fleet configuration with ordering
 ├── charts/                   # All Helm charts and resources go here
+│   ├── gpu-operator-namespace/ # Creates the gpu-operator namespace
+│   │   └── ... 
 │   ├── gpu-operator/         # GPU Operator chart
 │   │   ├── fleet.yaml        # GPU-specific fleet configuration
 │   │   └── values.yaml       # GPU operator values
@@ -29,6 +31,8 @@ suse-ai-minimal/
 │   ├── open-webui/
 │   │   ├── fleet.yaml
 │   │   └── values.yaml
+│   ├── neuvector-namespace/  # Creates the cattle-neuvector-system namespace
+│   │   └── ... 
 │   ├── neuvector-crd/        # NeuVector CRDs
 │   │   └── fleet.yaml        # NeuVector CRD fleet configuration
 │   ├── neuvector/            # NeuVector security platform
@@ -84,33 +88,40 @@ Ensure your target cluster has the label `environment: production` to match the 
 2. Click on your newly added repository
 3. Monitor the deployment status of each bundle
 4. Note that the bundles will deploy in the proper order:
-   - First, the GPU operator will be deployed
+   - First, the GPU operator namespace and the GPU operator will be deployed
    - Then, cert-manager will be deployed
    - Next, the SUSE AI applications (Ollama, Milvus, Open WebUI) will be deployed
-   - Finally, NeuVector CRDs and then the NeuVector services will be deployed
+   - Then, the NeuVector namespace will be created
+   - Next, the NeuVector CRDs will be installed
+   - Finally, the NeuVector services will be deployed
 
 ## Deployment Order
 
 The deployment is structured to respect these dependencies:
 
-1. `gpu-operator` - Deploys the NVIDIA GPU Operator 
-2. `cert-manager` - Deploys Cert-Manager for TLS certificate management
-3. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and cert-manager)
-4. `neuvector-crd` - Deploys NeuVector Custom Resource Definitions (depends on cert-manager and SUSE AI apps)
-5. `neuvector` - Deploys NeuVector container security platform (depends on neuvector-crd)
+1. `gpu-operator-namespace` - Creates the namespace for GPU Operator
+2. `gpu-operator` - Deploys the NVIDIA GPU Operator 
+3. `cert-manager` - Deploys Cert-Manager for TLS certificate management
+4. `suse-ai-apps` - Deploys all SUSE AI applications (depends on GPU operator and cert-manager)
+5. `neuvector-namespace` - Creates the namespace for NeuVector
+6. `neuvector-crd` - Deploys NeuVector Custom Resource Definitions
+7. `neuvector` - Deploys NeuVector container security platform
 
 This order ensures all prerequisites are met before deploying applications.
 
 ## Notes on Namespace Handling
 
 Each chart specifies its target namespace in its own fleet.yaml file:
-- GPU Operator deploys to the `gpu-operator` namespace (created automatically by Fleet)
+- The GPU Operator namespace chart creates the `gpu-operator` namespace
+- GPU Operator deploys to the `gpu-operator` namespace
 - All SUSE AI applications deploy to the `suse-ai` namespace (must be created manually before deployment)
-- NeuVector deploys to the `cattle-neuvector-system` namespace (created automatically by Fleet)
+- The NeuVector namespace chart creates the `cattle-neuvector-system` namespace
+- NeuVector CRDs and services deploy to the `cattle-neuvector-system` namespace
 
 ## NeuVector Configuration
 
 The NeuVector deployment includes:
+- NeuVector namespace creation (cattle-neuvector-system)
 - NeuVector CRD installation (deployed as a separate chart)
 - NeuVector Controller, Enforcer, and Manager components
 - Integration with Rancher authentication

@@ -39,13 +39,22 @@ targetCustomizations:
   - charts/milvus
   - charts/open-webui
 
-- name: neuvector-crd
+- name: neuvector-namespace
   clusterSelector:
     matchLabels:
       environment: production
   dependsOn:
   - name: cert-manager
   - name: suse-ai-apps
+  paths:
+  - charts/neuvector-namespace
+
+- name: neuvector-crd
+  clusterSelector:
+    matchLabels:
+      environment: production
+  dependsOn:
+  - name: neuvector-namespace
   paths:
   - charts/neuvector-crd
 
