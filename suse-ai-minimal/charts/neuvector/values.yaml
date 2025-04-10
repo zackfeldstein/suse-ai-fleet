@@ -13,7 +13,7 @@ leastPrivilege: false
 
 global: # required for rancher authentication (https://<Rancher_URL>/)
   cattle:
-    url: https://rancher-ui.home
+    url: https://ranch.kcdemos.com
     systemDefaultRegistry: registry.rancher.com
     psp:
       enabled: false # PSP enablement should default to false
