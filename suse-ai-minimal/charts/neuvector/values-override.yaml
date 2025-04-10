@@ -1,0 +1,5 @@
+# Override values for NeuVector
+global:
+  cattle:
+    url: "https://ranch.kcdemos.com"
+    systemDefaultRegistry: "registry.rancher.com" 

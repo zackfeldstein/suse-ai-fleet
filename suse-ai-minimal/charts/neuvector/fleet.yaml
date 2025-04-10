@@ -7,7 +7,4 @@ helm:
   releaseName: neuvector
   valuesFiles:
     - values.yaml
-  values:
-    global:
-      cattle:
-        url: https://ranch.kcdemos.com 
+    - values-override.yaml  # This will override values in the previous file 

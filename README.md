@@ -37,7 +37,8 @@ suse-ai-minimal/
 │   │   └── fleet.yaml        # NeuVector CRD fleet configuration
 │   ├── neuvector/            # NeuVector security platform
 │   │   ├── fleet.yaml        # NeuVector fleet configuration
-│   │   └── values.yaml       # NeuVector values
+│   │   ├── values.yaml       # NeuVector base values
+│   │   └── values-override.yaml # NeuVector custom overrides
 ```
 
 ## Prerequisites
@@ -135,18 +136,23 @@ The default configuration includes:
 
 ### Configuring NeuVector Rancher URL
 
-The Rancher URL used for NeuVector SSO authentication is configured in the `suse-ai-minimal/charts/neuvector/fleet.yaml` file. To change the Rancher URL, modify the following section:
+The Rancher URL used for NeuVector SSO authentication is configured in the `suse-ai-minimal/charts/neuvector/values-override.yaml` file:
 
 ```yaml
-helm:
-  # other configuration...
-  values:
-    global:
-      cattle:
-        url: https://ranch.kcdemos.com
+# Override values for NeuVector
+global:
+  cattle:
+    url: "https://ranch.kcdemos.com"
+    systemDefaultRegistry: "registry.rancher.com"
 ```
 
-Update the URL to match your Rancher installation. This approach allows you to easily change the URL without modifying the values.yaml file directly.
+To change the Rancher URL:
+
+1. Edit the `values-override.yaml` file and update the URL to match your Rancher installation
+2. Commit and push your changes to the repository
+3. Fleet will automatically detect the changes and update the NeuVector deployment
+
+The use of a separate override file ensures your custom values take precedence over the default values in `values.yaml`.
 
 ## Troubleshooting
 
