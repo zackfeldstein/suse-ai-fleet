@@ -133,6 +133,21 @@ The default configuration includes:
 - Automatic certificate generation
 - Vulnerability scanning enabled with CVE updates scheduled daily
 
+### Configuring NeuVector Rancher URL
+
+The Rancher URL used for NeuVector SSO authentication is configured in the `suse-ai-minimal/charts/neuvector/fleet.yaml` file. To change the Rancher URL, modify the following section:
+
+```yaml
+helm:
+  # other configuration...
+  values:
+    global:
+      cattle:
+        url: https://ranch.kcdemos.com
+```
+
+Update the URL to match your Rancher installation. This approach allows you to easily change the URL without modifying the values.yaml file directly.
+
 ## Troubleshooting
 
 - If charts fail to deploy due to authentication issues, verify that the `application-collection` secret is correctly configured in the `suse-ai` namespace
